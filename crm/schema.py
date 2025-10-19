@@ -1,26 +1,34 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from .models import Customer, Product, Order
-from django.db import transaction
-from graphql import GraphQLError
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 
-class CustomerType(DjangoObjectType):
+# -------------------------------
+# Graphene Types
+# -------------------------------
+class CustomerNode(DjangoObjectType):
     class Meta:
         model = Customer
-        fields = ("id", "name", "email", "phone")
+        fields = ("id", "name", "email", "phone", "created_at")
+        interfaces = (graphene.relay.Node,)
 
-class ProductType(DjangoObjectType):
+class ProductNode(DjangoObjectType):
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ("id", "name", "price", "stock")
+        interfaces = (graphene.relay.Node,)
 
-class OrderType(DjangoObjectType):
+class OrderNode(DjangoObjectType):
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ("id", "customer", "products", "total_amount", "order_date")
+        interfaces = (graphene.relay.Node,)
 
+# -------------------------------
+# Query with Filters
+# -------------------------------
 class Query(graphene.ObjectType):
-    all_customers = graphene.List(CustomerType)
-
-    def resolve_all_customers(root, info):
-        return Customer.objects.all()
+    all_customers = DjangoFilterConnectionField(CustomerNode, filterset_class=CustomerFilter)
+    all_products = DjangoFilterConnectionField(ProductNode, filterset_class=ProductFilter)
+    all_orders = DjangoFilterConnectionField(OrderNode, filterset_class=OrderFilter)
