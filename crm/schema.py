@@ -1,6 +1,8 @@
 import graphene
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from .models import Customer, Product, Order
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 from django.core.validators import RegexValidator
 from graphql import GraphQLError
 from django.db import transaction
@@ -179,15 +181,6 @@ class Mutation(graphene.ObjectType):
 # -------------------------------
 
 class Query(graphene.ObjectType):
-    all_customers = graphene.List(CustomerType)
-    all_products = graphene.List(ProductType)
-    all_orders = graphene.List(OrderType)
-
-    def resolve_all_customers(root, info):
-        return Customer.objects.all()
-
-    def resolve_all_products(root, info):
-        return Product.objects.all()
-
-    def resolve_all_orders(root, info):
-        return Order.objects.all()
+    all_customers = DjangoFilterConnectionField(CustomerNode, filterset_class=CustomerFilter)
+    all_products = DjangoFilterConnectionField(ProductNode, filterset_class=ProductFilter)
+    all_orders = DjangoFilterConnectionField(OrderNode, filterset_class=OrderFilter)
