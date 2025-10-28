@@ -1,5 +1,7 @@
 import datetime
 import requests
+from gql.transport.requests import RequestsHTTPTransport
+from gql import gql, Client
 
 def update_low_stock():
     """Triggers the GraphQL mutation to restock low-stock products."""
@@ -42,7 +44,7 @@ def update_low_stock():
     except Exception as e:
         with open(log_file, "a") as f:
             f.write(f"{timestamp} - Error: {e}\n")
-            
+
 def log_crm_heartbeat():
     """Logs a timestamped heartbeat message and optionally checks GraphQL endpoint."""
     log_file = "/tmp/crm_heartbeat_log.txt"
