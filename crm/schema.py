@@ -6,6 +6,7 @@ from .filters import CustomerFilter, ProductFilter, OrderFilter
 from django.core.validators import RegexValidator
 from graphql import GraphQLError
 from django.db import transaction
+from crm.models import Product
 
 # -------------------------------
 # Graphene Types
