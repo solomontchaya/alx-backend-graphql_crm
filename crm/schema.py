@@ -22,12 +22,32 @@ class ProductType(DjangoObjectType):
         model = Product
         fields = ("id", "name", "price", "stock")
 
+# Define the Mutation
+class UpdateLowStockProducts(graphene.Mutation):
+    class Arguments:
+        pass  # No input needed for this mutation
 
+    success = graphene.String()
+    updated_products = graphene.List(ProductType)
+
+    def mutate(self, info):
+        low_stock_products = Product.objects.filter(stock__lt=10)
+        updated_list = []
+
+        for product in low_stock_products:
+            product.stock += 10  # simulate restocking
+            product.save()
+            updated_list.append(product)
+
+        return UpdateLowStockProducts(
+            success=f"{len(updated_list)} products restocked successfully.",
+            updated_products=updated_list
+        )
+    
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = ("id", "customer", "products", "total_amount", "order_date")
-
 
 # -------------------------------
 # Mutations
