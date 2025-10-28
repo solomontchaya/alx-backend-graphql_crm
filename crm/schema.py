@@ -7,6 +7,7 @@ from django.core.validators import RegexValidator
 from graphql import GraphQLError
 from django.db import transaction
 from crm.models import Product
+from crm.models import Customer, Order
 
 # -------------------------------
 # Graphene Types
